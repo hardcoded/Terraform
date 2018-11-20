@@ -19,27 +19,11 @@ data "aws_ami" "ubuntu" {
 resource "aws_instance" "web" {
     ami           = "${data.aws_ami.ubuntu.id}"
     instance_type = "t2.micro"
-    subnet_id      = "${aws_subnet.main.id}"
-
-    # provisioner "file" {
-    # source      = "script.sh"
-    # destination = "/tmp/script.sh"
-    # }
-
-    # provisioner "remote-exec" {
-    #     inline = [
-    #     "sudo chmod +x /tmp/script.sh",
-    #     "./tmp/script.sh",
-    #     ]
-    # }
+    subnet_id      = "${aws_subnet.public_subnet.id}"
+    vpc_security_group_ids = ["${aws_security_group.allow_all_egress.id}", "${aws_security_group.http_https.id}", "${aws_security_group.ssh.id}"]
 
     tags {
-        Name = "HelloWorld"
+        Name = "DevOps"
     }
 
-}
-
-resource "aws_network_interface_sg_attachment" "sg_attachment" {
-  security_group_id    = "${aws_security_group.allow_all.id}"
-  network_interface_id = "${aws_instance.web.primary_network_interface_id}"
 }
